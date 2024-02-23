@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Rolepp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Rolepp.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Warehouse Management</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+
+
+
+                        @if (User.IsInRole("CFO"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Warehouses" asp-action="Index">Warehouse</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a id="productsLink" class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                            </li>
+                        }
+
+
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a id="noteButton" class="nav-link text-dark" asp-area="" asp-controller="Notes" asp-action="Index">Note</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("CFO"))
+                        {
+                            <li class="nav-item">
+                                <a id="noteButton" class="nav-link text-dark" asp-area="" asp-controller="Notes" asp-action="Index">Note</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Accountant"))
+                        {
+                            <li class="nav-item">
+                                <a id="noteButton" class="nav-link text-dark" asp-area="" asp-controller="Notes" asp-action="Index">Note</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("CFO"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Create New Account</a>
+                            </li>
+                        }
+
+                    
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - Rolepp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+
+</html>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        updateNoteCount();
+        checkAndToggleNotification();
+
+        function updateNoteCount() {
+            $.ajax({
+                url: '/Notes/GetNewNoteCount',
+                type: 'GET',
+                success: function (data) {
+                    $('#noteButton').text('Note (' + data + ')');
+                },
+                error: function () {
+                    console.log('Error updating note count');
+                }
+            });
+        }
+
+        function checkAndToggleNotification() {
+            $.ajax({
+                url: '/Notes/CheckNoteStatus',
+                type: 'GET',
+                success: function (data) {
+                    if (data === 'True') {
+                        $('#notification').hide();
+                    } else {
+                        $('#notification').show();
+                    }
+                },
+                error: function () {
+                    console.log('Error checking note status');
+                }
+            });
+        }
+    });
+
+    function updateProductCount() {
+        $.ajax({
+            url: '/Products/ProductCount',
+            type: 'GET',
+            success: function (data) {
+                $('#productButton').text('Products (' + data + ')');
+            },
+            error: function () {
+                console.log('Error updating product count');
+            }
+        });
+    }
+    $(document).ready(function () {
+        // Call the function when the page loads
+        updateProductCount();
+
+        // Function to update the product count
+        function updateProductCount() {
+            $.ajax({
+                url: '/Products/ProductCount', // URL of the ProductCount action method
+                type: 'GET', // HTTP method is GET
+                success: function (data) {
+                    // On success, update the text of the #productsLink element
+                    $('#productsLink').text('Products (' + data + ')');
+                },
+                error: function () {
+                    // On error, log a message to the console
+                    console.log('Error updating product count');
+                }
+            });
+        }
+    });
+
+</script>

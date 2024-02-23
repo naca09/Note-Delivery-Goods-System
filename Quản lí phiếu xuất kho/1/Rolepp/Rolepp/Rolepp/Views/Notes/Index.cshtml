@@ -1,0 +1,170 @@
+﻿@model PaginatedList<Note>
+
+<h2>Notes Delivery Goods</h2>
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create">Create new Note</a>
+    </p>
+}
+
+
+        <form asp-action="Index" method="get">
+            <p>
+                <input type="text" name="searchString" placeholder="Please enter Code" />
+                <input type="submit" value="Search" />
+            </p>
+        </form>
+ 
+<form asp-action="Index" method="get" id="searchForm">
+    <p>
+        <label for="fromDate">Từ ngày:</label>
+        <input type="date" id="fromDate" name="fromDate" />
+
+        <label for="toDate">Đến ngày:</label>
+        <input type="date" id="toDate" name="toDate" />
+
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
+<form asp-action="DownloadSearchResults" method="get" id="downloadForm">
+    <input type="hidden" name="fromDate" value="@ViewBag.FromDate" />
+    <input type="hidden" name="toDate" value="@ViewBag.ToDate" />
+    <input type="submit" value="Download Search Results" id="downloadButton" disabled />
+</form>
+  
+
+
+
+
+
+@Html.DropDownList("SortOrder", new SelectList(new List<Object>{
+    new { value = "newest" , text = "Newest"  },
+    new { value = "oldest" , text = "Oldest" }
+}, "value", "text"), "Select Sort Order", new { @onchange = "this.form.submit();" })
+<table class="table">
+    <thead>
+        <tr>
+            <th>Note Code</th>
+            <th>Stautus</th>
+            <th>Action</th>
+            <th>Download</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NoteCode)
+                </td>
+                <td>
+                    @if (User.IsInRole("Accountant") && item.Status == 1)
+                    {
+                        <button onclick="updateStatus(@item.NoteId, 2)" style="color:green">Approved</button>
+                    }
+                    else if (User.IsInRole("CFO") && item.Status == 2)
+                    {
+                        <button onclick="updateStatus(@item.NoteId, 3)" style="color:green">Approve</button>
+                        <button onclick="updateStatus(@item.NoteId, 4)" style="color:red">Disapprove</button>
+                    }
+                    else if (item.Status == 3)
+                    {
+                        <span style="color: green">Approved</span>
+                    }
+                    else if (item.Status == 4)
+                    {
+                        <span style="color: red">Disapproved</span>
+                    }
+                    else
+                    {
+                        <span style="color:orange">Waiting.....</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.NoteId">See details</a>
+                </td>
+                <td>
+                    <a asp-action="DownloadNoteDetails" asp-route-id="@item.NoteId">Download</a> <!-- Nút tải xuống -->
+                </td>
+                
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="pagination">
+    @if (Model.HasPreviousPage)
+    {
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)">Previous</a>
+    }
+    else
+    {
+        <span>Previous</span>
+    }
+
+    <span> @Model.PageIndex </span>
+
+    @if (Model.HasNextPage)
+    {
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)">Next</a>
+    }
+    else
+    {
+        <span> Next</span>
+    }
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function updateStatus(noteId, newStatus) {
+        $.ajax({
+            url: '/Notes/UpdateStatusAjax/' + noteId + '?newStatus=' + newStatus,
+            type: 'POST',
+            success: function (data) {
+                console.log('Status updated successfully');
+                location.reload();
+            },
+            error: function () {
+                console.log('Error updating status');
+            }
+        });
+    }
+
+    function deleteNote(noteId) {
+        $.ajax({
+            url: '/Notes/Delete/' + noteId,
+            type: 'POST',
+            success: function (data) {
+                console.log('Note deleted successfully');
+                location.reload();
+            },
+            error: function () {
+                console.log('Error deleting note');
+            }
+        });
+    }
+
+    function handleSortOrderChange() {
+        var selectedSortOrder = $("#SortOrder").children("option:selected").val();
+        window.location.href = '/Notes/Index?sortOrder=' + selectedSortOrder;
+    }
+
+    $(document).ready(function () {
+        $("#SortOrder").change(handleSortOrderChange);
+    });
+
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Get the current URL
+        var url = new URL(window.location.href);
+
+        // Check if the URL contains the 'fromDate' and 'toDate' parameters
+        if (url.searchParams.has('fromDate') && url.searchParams.has('toDate')) {
+            // Enable the download button
+            document.getElementById('downloadButton').disabled = false;
+        }
+    });
+</script>

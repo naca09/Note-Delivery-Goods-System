@@ -1,0 +1,82 @@
+﻿@model PaginatedList<Product>
+
+<h2>Product List</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<form asp-action="Index" method="get">
+    <p>
+        <input type="text" name="searchString" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+<form asp-action="Index" method="get">
+    <p>
+        <input type="hidden" name="lowQuantity" value="true" />
+        <input type="submit" value="Show Products with Low Quantity" />
+    </p>
+</form>
+<a asp-action="Download">Download Products</a>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product's Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Product Code</th>
+            <th>Warehouse</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price) $
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Warehouse.WarehouseName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProductID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="pagination">
+    @if (Model.HasPreviousPage)
+    {
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)">Previous</a>
+    }
+    else
+    {
+        <span>Previous</span>
+    }
+
+    <span> @Model.PageIndex </span>
+
+    @if (Model.HasNextPage)
+    {
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)">Next</a>
+    }
+    else
+    {
+        <span> Next</span>
+    }
+</div>

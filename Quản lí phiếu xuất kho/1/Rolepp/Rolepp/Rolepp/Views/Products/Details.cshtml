@@ -1,0 +1,89 @@
+﻿@model Rolepp.Models.Product
+
+<h2>Product Details</h2>
+
+<div class="container">
+    <h4>ProductID: @Model.ProductID</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Product Name:</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.ProductName)</dd>
+        <dt class="col-sm-2">Price:</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Price)</dd>
+        <dt class="col-sm-2">Quantity:</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Quantity)</dd>
+        <dt class="col-sm-2">Product Code:</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.ProductCode)</dd>
+        <dt class="col-sm-2">Warehouse:</dt>
+        <dd class="col-sm-10">
+            @if (Model.Warehouse != null)
+            {
+                @Html.DisplayFor(model => model.Warehouse.WarehouseName)
+            }
+            else
+            {
+                <span class="no-warehouse">No warehouse assigned</span>
+            }
+        </dd>
+        <dt class="col-sm-2">Address:</dt>
+        <dd class="col-sm-10">
+            @if (Model.Warehouse != null)
+            {
+                @Html.DisplayFor(model => model.Warehouse.Address)
+            }
+            else
+            {
+                <span class="no-warehouse">No warehouse assigned</span>
+            }
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<style>
+    /* Style cho tiêu đề */
+    h2 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    /* Style cho container chứa thông tin chi tiết */
+    .container {
+        width: 60%;
+        margin: 0 auto;
+    }
+
+    /* Style cho các dòng thông tin */
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+        /* Style cho nhãn của dòng */
+        .row dt {
+            width: 30%;
+            font-weight: bold;
+        }
+
+        /* Style cho nội dung của dòng */
+        .row dd {
+            width: 70%;
+        }
+
+    /* Style cho thông tin kho */
+    .warehouse-info {
+        font-style: italic;
+        color: #888;
+    }
+
+    /* Style cho thông báo khi không có kho */
+    .no-warehouse {
+        font-style: italic;
+        color: #f00;
+    }
+</style>

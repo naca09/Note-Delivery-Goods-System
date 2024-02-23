@@ -1,0 +1,94 @@
+﻿@model Rolepp.Models.Note
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Note Delivery Goods Details</h2>
+
+<div>
+    <h4>Note Information</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.NoteCode)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NoteCode)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CreateName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CreateName)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Customer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Customer)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AddressCustomer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AddressCustomer)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Reason)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Reason)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+    </dl>
+</div>
+
+
+<div>
+    <h4>Products</h4>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Product Code</th>
+                <th>StockOut</th>
+                <th>Price</th>
+                <th>Total</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.NoteProducts)
+            {
+                <tr>
+                    <td>@product.Product.ProductName</td>
+                    <td>@product.Product.ProductCode</td>
+                    <td>@product.StockOut</td>
+                    <td>@product.Product.Price.ToString("C")</td>
+                    <td>$@(product.StockOut * product.Product.Price)</td>
+                </tr>
+            }
+            <tr>
+                <td colspan="4">Total of Note:</td>
+                <td id="totalOfNote">$@Model.NoteProducts.Sum(p => p.StockOut * p.Product.Price)</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>
+

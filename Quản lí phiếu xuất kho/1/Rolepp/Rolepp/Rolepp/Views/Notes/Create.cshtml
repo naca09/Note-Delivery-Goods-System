@@ -1,0 +1,286 @@
+﻿@model Rolepp.Models.NoteViewModel
+
+
+<h2>Create</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="NoteCode"></label>
+        <input asp-for="NoteCode" class="form-control" />
+        <span asp-validation-for="NoteCode" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CreateName"></label>
+        <input asp-for="CreateName" class="form-control" />
+        <span asp-validation-for="CreateName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Customer"></label>
+        <input asp-for="Customer" class="form-control" />
+        <span asp-validation-for="Customer" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="AddressCustomer"></label>
+        <input asp-for="AddressCustomer" class="form-control" />
+        <span asp-validation-for="AddressCustomer" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Reason"></label>
+        <input asp-for="Reason" class="form-control" />
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+
+    <div id="productToExportForm">
+        <h3>Product To Export</h3>
+        <div id="dropdownsContainer">
+            <div class="form-group product-dropdown">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Product:</label>
+                        <select asp-for="@Model.Products[0].ProductID" asp-items="@(new SelectList(ViewBag.Products, "ProductID", "ProductName"))" class="form-control">
+                            <option value="">Select a product</option>
+                        </select>
+                        <span asp-validation-for="@Model.Products[0].ProductID" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <label>StockOut:</label>
+                        <input asp-for="@Model.Products[0].StockOut" type="number" min="1" class="form-control" />
+                        <span asp-validation-for="@Model.Products[0].StockOut" class="text-danger"></span>
+                    </div>
+                    <!-- Add other input fields for ProductCode, Price, Quantity, and Total here -->
+                    <div class="col-md-2">
+                        <label for="ProductCode">Product Code:</label>
+                        <input type="text" id="ProductCode" class="form-control" readonly>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="Price">Price:</label>
+                        <input type="text" id="Price" class="form-control" readonly>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="Quantity">Quantity:</label>
+                        <input type="text" id="Quantity" class="form-control" readonly>
+                    </div>
+
+
+                    <div class="col-md-2">
+                        <label>Total</label>
+                        <input type="text" id="Total" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-danger btn-remove">Remove</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <button type="button" id="addDropdown" class="btn btn-primary">Add Another Product</button>
+    </div>
+    <div class="form-group">
+        <label>Total of Note: </label>
+        <input type="number" id="TotalOfProduct" class="form-control" readonly />
+    </div>
+
+
+    <button type="submit" class="btn btn-primary" id="CreateBtn">Create</button>
+</form>
+
+@section Scripts {
+    @* <script>
+
+
+        $(document).ready(function () {
+            $('.product-dropdown select').change(function () {
+                var productId = $(this).val();
+                if (productId) {
+                    $.ajax({
+                        url: '/Products/GetProductDetails',
+                        type: 'GET',
+                        data: { 'id': productId },
+                        success: function (data) {
+                            // Update the fields with the returned data
+                            $('#ProductCode').val(data.productCode);
+                            $('#Quantity').val(data.quantity);
+                            $('#Price').val(data.price);
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $("input[name='Products[0].StockOut'], #Price").change(function () {
+                var stockOut = $("input[name='Products[0].StockOut']").val();
+                var price = $('#Price').val();
+                if (stockOut && price) {
+                    var total = stockOut * price;
+                    $('#Total').val(total);
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            var counter = 1;
+
+            // Add dropdown when clicking on Add button
+            $("#addDropdown").on("click", function () {
+                var dropdownHtml = `<div class="form-group product-dropdown row">
+                                                            <div class="col-md-2">
+                                                                <label>Product:</label>
+                                                                <select name="Products[${counter}].ProductId" class="form-control">
+                                                                    <option value="">Select a product</option>`;
+        @foreach (var product in ViewBag.Products)
+        {
+
+            <text>
+                        dropdownHtml += '<option value="@product.ProductID">@product.ProductName</option>';
+            </text>
+        }
+
+                    dropdownHtml += `</select>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>StockOut:</label>
+                                                                <input name="Products[${counter}].StockOut" type="number" min="1" class="form-control" />
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Product Code</label>
+                                                                <input type="text" name="Products[${counter}].ProductCode" class="form-control productCode" readonly />
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Price</label>
+                                                                <input type="text" name="Products[${counter}].Price" class="form-control price" readonly />
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Quantity</label>
+                                                                <input type="number" name="Products[${counter}].Quantity" class="form-control quantity" readonly />
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Total</label>
+                                                                <input type="number" name="Products[${counter}].Total" class="form-control total" readonly />
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <button type="button" class="btn btn-danger btn-remove">Remove</button>
+                                                            </div>
+                                                        </div>`;
+
+                $("#dropdownsContainer").append(dropdownHtml);
+
+                counter++;
+            });
+            // Remove dropdown when clicking on Remove button
+            $("#dropdownsContainer").on("click", ".btn-remove", function () {
+                $(this).closest(".product-dropdown").remove();
+            });
+        });
+
+    </script> *@
+
+    <script>
+        $(document).ready(function () {
+            var counter = 1;
+
+            // Add dropdown when clicking on Add button
+            $("#addDropdown").on("click", function () {
+                var dropdownHtml = `<div class="form-group product-dropdown row">
+                                                            <div class="col-md-2">
+                                                                <label>Product:</label>
+                                                                <select name="Products[${counter}].ProductId" class="form-control product-select">
+                                                                    <option value="">Select a product</option>`;
+
+        @foreach (var product in ViewBag.Products)
+        {
+            <text>
+                        dropdownHtml += '<option value="@product.ProductID">@product.ProductName</option>';
+            </text>
+        }
+
+                    dropdownHtml += `</select>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>StockOut:</label>
+                                                                <input name="Products[${counter}].StockOut" type="number" min="1" class="form-control stockout" />
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Product Code</label>
+                                                                <input type="text" name="Products[${counter}].ProductCode" class="form-control product-code" readonly />
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Price</label>
+                                                                <input type="text" name="Products[${counter}].Price" class="form-control price" readonly />
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Quantity</label>
+                                                                <input type="number" name="Products[${counter}].Quantity" class="form-control quantity" readonly />
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Total</label>
+                                                                <input type="number" name="Products[${counter}].Total" class="form-control total" readonly />
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <button type="button" class="btn btn-danger btn-remove">Remove</button>
+                                                            </div>
+                                                        </div>`;
+
+                $("#dropdownsContainer").append(dropdownHtml);
+
+                counter++;
+            });
+
+            // Remove dropdown when clicking on Remove button
+            $("#dropdownsContainer").on("click", ".btn-remove", function () {
+                $(this).closest(".product-dropdown").remove();
+                calculateTotal();
+            });
+
+            // Load product details when selecting a product
+            $("#dropdownsContainer").on("change", ".product-select", function () {
+                var productId = $(this).val();
+                var dropdownContainer = $(this).closest(".product-dropdown");
+                if (productId) {
+                    $.ajax({
+                        url: '/Products/GetProductDetails',
+                        type: 'GET',
+                        data: { 'id': productId },
+                        success: function (data) {
+                            // Update the fields with the returned data
+                            dropdownContainer.find(".product-code").val(data.productCode);
+                            dropdownContainer.find(".quantity").val(data.quantity);
+                            dropdownContainer.find(".price").val(data.price);
+                            calculateTotal();
+                        }
+                    });
+                }
+            });
+
+            // Calculate total when changing stockOut or price
+            $("#dropdownsContainer").on("change", ".stockout, .price", function () {
+                calculateTotal();
+            });
+            // Calculate total when changing stockOut or price
+            $("#dropdownsContainer").on("change", ".stockout, .price", function () {
+                var dropdownContainer = $(this).closest(".product-dropdown");
+                var stockOut = dropdownContainer.find(".stockout").val();
+                var price = dropdownContainer.find(".price").val();
+                if (stockOut && price) {
+                    var total = stockOut * price;
+                    dropdownContainer.find(".total").val(total);
+                }
+            });
+            // Function to calculate total
+            function calculateTotal() {
+                var total = 0;
+                $(".product-dropdown").each(function () {
+                    var stockOut = $(this).find(".stockout").val();
+                    var price = $(this).find(".price").val();
+                    if (stockOut && price) {
+                        total += stockOut * price;
+                    }
+                });
+                $("#TotalOfProduct").val(total);
+            }
+        });
+
+    </script>
+}
