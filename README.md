@@ -6,8 +6,7 @@
 - ASP .Net 7.0.15
 - Microsoft SQL Server 2019 
 - C# MVC 5 
-- 
-
+  
 # Database 
 ![Capture](https://github.com/naca09/Note-Delivery-Goods-System/assets/86470016/bb311963-d72a-49af-8140-74d8265a98e1)
 
@@ -33,4 +32,8 @@
   cd RoleApp 
   dotnet run 
 ```
+# Group 4 - SE17C01
+- Đinh Quốc Tiến 
+- Nguyễn Mih Tuấn   
+- Nguyễn Tuấn Hào 
 
