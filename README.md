@@ -34,6 +34,6 @@
 ```
 # Group 4 - SE17C01
 - Đinh Quốc Tiến 
-- Nguyễn Mih Tuấn   
+- Nguyễn Minh Tuấn   
 - Nguyễn Tuấn Hào 
 
